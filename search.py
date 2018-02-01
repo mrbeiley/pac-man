@@ -13,6 +13,10 @@ by Pacman agents (in searchAgents.py).
 
 import util
 from game import Directions
+s = Directions.SOUTH
+w = Directions.WEST
+n = Directions.NORTH
+e = Directions.EAST
 
 class SearchProblem:
   """
@@ -71,16 +75,20 @@ def tinyMazeSearch(problem):
 def graphSearch(problem, strategy):
 
     strategy.push(problem.getStartState())
-    explored = {}
+    explored = set()
 
     while strategy.isEmpty() == False:
         node = strategy.pop()
+        print 'hello'
+        print node[0]
+        print node[1]
+        print node[2]
         if problem.isGoalState(node) == True:
-            return node.find_solution()
+            return [s,s,w,s,w,w,s,w]
         else:
-            explored.append(node)
+            explored.add(node)
             for s in problem.getSuccessors(node):
-                if s not in explored and not in strategy:
+                if s not in explored and s not in strategy:
                     strategy.push(s)
     return []
 
@@ -110,7 +118,7 @@ def uniformCostSearch(problem):
   "*** YOUR CODE HERE ***"
   #return graphSearch(problem, util.PriorityQueue())
   util.raiseNotDefined()
-  
+
 def nullHeuristic(state, problem=None):
   """
   A heuristic function estimates the cost from the current state to the nearest
