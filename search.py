@@ -12,6 +12,7 @@ by Pacman agents (in searchAgents.py).
 """
 
 import util
+from game import Directions
 
 class SearchProblem:
   """
@@ -67,6 +68,22 @@ def tinyMazeSearch(problem):
   w = Directions.WEST
   return  [s,s,w,s,w,w,s,w]
 
+def graphSearch(problem, strategy):
+
+    strategy.push(problem.getStartState())
+    explored = {}
+
+    while strategy.isEmpty() == False:
+        node = strategy.pop()
+        if problem.isGoalState(node) == True:
+            return node.find_solution()
+        else:
+            explored.append(node)
+            for s in problem.getSuccessors(node):
+                if s not in explored and not in strategy:
+                    strategy.push(s)
+    return []
+
 def depthFirstSearch(problem):
   """
   Search the deepest nodes in the search tree first [p 85].
@@ -81,57 +98,19 @@ def depthFirstSearch(problem):
   print "Is the start a goal?", problem.isGoalState(problem.getStartState())
   print "Start's successors:", problem.getSuccessors(problem.getStartState())
   """
-  from game import Directions
-
-
-  dfs_stack = util.Stack()
-  explored = []
-
-  if problem.isGoalState(problem.getStartState()) == True:
-      return []
-  else:
-      for s in problem.getSuccessors(problem.getStartState()):
-          dfs_stack.push(s)
-
-  while dfs_stack.isEmpty() == False:
-      node = dfs_stack.pop()
-      if problem.isGoalState(node) == True:
-          solution = []
-          while dfs_stack.isEmpty() == False:
-              for pos, action, cost in dfs_stack.pop():
-                  if action == 'West':
-                      solution.append(Directions.WEST)
-                  if action == 'East':
-                      solution.append(Directions.EAST)
-                  if action == 'South':
-                      solution.append(Directions.SOUTH)
-                  if action == 'North':
-                      solution.append(Directions.NORTH)
-
-          print solution
-      else:
-          if node not in explored:
-              explored.append(node)
-
-              for s in problem.getSuccessors(node[0]):
-                  dfs_stack.push(s)
-
-
-
-
-
-
+  return graphSearch(problem, util.Stack())
 
 def breadthFirstSearch(problem):
   "Search the shallowest nodes in the search tree first. [p 81]"
   "*** YOUR CODE HERE ***"
-  util.raiseNotDefined()
+  return graphSearch(problem, util.Queue())
 
 def uniformCostSearch(problem):
   "Search the node of least total cost first. "
   "*** YOUR CODE HERE ***"
+  #return graphSearch(problem, util.PriorityQueue())
   util.raiseNotDefined()
-
+  
 def nullHeuristic(state, problem=None):
   """
   A heuristic function estimates the cost from the current state to the nearest
