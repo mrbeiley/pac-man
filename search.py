@@ -73,24 +73,26 @@ def tinyMazeSearch(problem):
   return  [s,s,w,s,w,w,s,w]
 
 def graphSearch(problem, strategy):
-
-    strategy.push(problem.getStartState())
+    """
+        problem: initializes board state
+        strategy: stack
+    """
+    start_node = Node(problem.getStartState(), None , 0, None)
+    strategy.push(start_node)
     explored = set()
 
     while strategy.isEmpty() == False:
         node = strategy.pop()
-        print 'hello'
-        print node[0]
-        print node[1]
-        print node[2]
-        if problem.isGoalState(node) == True:
-            return [s,s,w,s,w,w,s,w]
+        if problem.isGoalState(node.state) == True:
+            return node.getSolution()
         else:
-            explored.add(node)
-            for s in problem.getSuccessors(node):
-                if s not in explored and s not in strategy:
-                    strategy.push(s)
-    return []
+            explored.add(node.state)
+
+            for succ in problem.getSuccessors(node.state):
+                succ_node = Node(succ[0],succ[1],succ[2], node)
+                if succ[0] not in explored and succ_node not in strategy.list:
+                    strategy.push(succ_node)
+
 
 def depthFirstSearch(problem):
   """
@@ -137,3 +139,39 @@ bfs = breadthFirstSearch
 dfs = depthFirstSearch
 astar = aStarSearch
 ucs = uniformCostSearch
+
+class Node():
+
+    def __init__(self, state, action, cost, parent):
+
+        self.state = state
+        if(action == 'North'):
+            self.action = n
+        elif(action == 'South'):
+            self.action = s
+        elif(action == 'West'):
+            self.action = w
+        elif(action =='East'):
+            self.action = e
+        else:
+            self.action = None
+        self.cost = cost
+        self.parent = parent
+
+
+    def getSolution(self):
+        path = [self.action]
+        parent = self.parent
+        while parent.action != None:
+            path.append(parent.action)
+            parent = parent.parent
+        #for i in xrange(len(self.path)):
+        #        if(self.path[i] == 'North'):
+        #            self.path[i] = n
+        #        elif(self.path[i] == 'South'):
+        #            self.path[i] = s
+        #        elif(self.path[i] == 'West'):
+        #            self.path[i] = w
+        #        else:
+        #            self.path[i] = e
+        return path[::-1]
