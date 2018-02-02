@@ -75,7 +75,7 @@ def tinyMazeSearch(problem):
 def graphSearch(problem, strategy):
     """
         problem: initializes board state
-        strategy: stack
+        strategy: type of ordering structure for search
     """
     start_node = Node(problem.getStartState(), None , 0, None)
     strategy.push(start_node)
@@ -90,7 +90,7 @@ def graphSearch(problem, strategy):
 
             for succ in problem.getSuccessors(node.state):
                 succ_node = Node(succ[0],succ[1],succ[2], node)
-                if succ[0] not in explored and succ_node not in strategy.list:
+                if succ_node.state not in explored and succ_node not in strategy.list:
                     strategy.push(succ_node)
 
 
@@ -98,26 +98,49 @@ def depthFirstSearch(problem):
   """
   Search the deepest nodes in the search tree first [p 85].
 
-  Your search algorithm needs to return a list of actions that reaches
-  the goal.  Make sure to implement a graph search algorithm [Fig. 3.7].
-
-  To get started, you might want to try some of these simple commands to
-  understand the search problem that is being passed in:
-
-  print "Start:", problem.getStartState()
-  print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-  print "Start's successors:", problem.getSuccessors(problem.getStartState())
+  uses graphSearch with a stack (LIFO) strategy
   """
   return graphSearch(problem, util.Stack())
 
 def breadthFirstSearch(problem):
-  "Search the shallowest nodes in the search tree first. [p 81]"
-  "*** YOUR CODE HERE ***"
+  """
+  Search the shallowest nodes in the search tree first. [p 81]
+
+  uses graphSearch with a queue (FIFO) strategy
+  """
   return graphSearch(problem, util.Queue())
 
 def uniformCostSearch(problem):
-  "Search the node of least total cost first. "
-  "*** YOUR CODE HERE ***"
+  """Search the node of least total cost first.
+
+  operates similar to graphSearch, but with
+  extra cost checking functionality
+  """
+  strategy = util.PriorityQueue()
+  start_node = Node(problem.getStartState(), None , 0, None)
+  strategy.push(start_node, start_node.cost)
+  explored = set()
+
+  while strategy.isEmpty() == False:
+      node = strategy.pop()
+      if problem.isGoalState(node.state) == True:
+          return node.getSolution()
+      else:
+          explored.add(node.state)
+          for succ in problem.getSuccessors(node.state):
+              succ_node = Node(succ[0],succ[1],node.cost+ succ[2], node)
+              if succ_node.state not in explored and succ_node not in strategy.heap:
+                  strategy.push(succ_node, succ_node.cost)
+              elif succ_node in strategy.heap:
+                  compare_node = strategy.find_and_extract(succ_node.state)
+                  if succ_node.cost < compare_node.cost:
+                      strategy.push(succ_node, succ_node.cost)
+                  else:
+                      strategy.push(compare_node, compare_node.cost)
+
+
+
+
   #return graphSearch(problem, util.PriorityQueue())
   util.raiseNotDefined()
 
