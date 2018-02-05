@@ -104,7 +104,6 @@ class SearchAgent(Agent):
     if self.searchFunction == None: raise Exception, "No search function provided for SearchAgent"
     starttime = time.time()
     problem = self.searchType(state) # Makes a new search problem
-    self.actions  = self.searchFunction(problem) # Find a path
     totalCost = problem.getCostOfActions(self.actions)
     print('Path found with total cost of %d in %.1f seconds' % (totalCost, time.time() - starttime))
     if '_expanded' in dir(problem): print('Search nodes expanded: %d' % problem._expanded)
@@ -276,8 +275,7 @@ class CornersProblem(search.SearchProblem):
         print 'Warning: no food in corner ' + str(corner)
     self._expanded = 0 # Number of search nodes expanded
 
-    self.visited = []
-
+    self._visited, self._visitedlist, self._expanded = {}, [], 0
 
     "*** YOUR CODE HERE ***"
 
@@ -292,7 +290,7 @@ class CornersProblem(search.SearchProblem):
     """
     for corner in self.corners:
         num_corners = 0
-        if corner in self.visited:
+        if corner in self._visitedlist:
             num_corners = num_corners + 1
 
     if num_corners == 4: isGoal = True
@@ -315,16 +313,21 @@ class CornersProblem(search.SearchProblem):
     for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
       # Add a successor state to the successor list if the action is legal
       # Here's a code snippet for figuring out whether a new position hits a wall:
-      x,y = currentPosition
+      x,y = state
       dx, dy = Actions.directionToVector(action)
       nextx, nexty = int(x + dx), int(y + dy)
       hitsWall = self.walls[nextx][nexty]
       if not hitsWall:
-	nextState = (nextx, nexty)
-	successors.append(nextState, action, 1)
+          nextState = (nextx, nexty)
+          successors.append((nextState, action, 1))
 
 
     self._expanded += 1
+    # Bookkeeping for display purposes
+    self._expanded += 1
+    if state not in self._visited:
+        self._visited[state] = True
+        self._visitedlist.append(state)
     return successors
 
   def getCostOfActions(self, actions):
