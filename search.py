@@ -139,11 +139,6 @@ def uniformCostSearch(problem):
                       strategy.push(compare_node, compare_node.cost)
 
 
-
-
-  #return graphSearch(problem, util.PriorityQueue())
-  util.raiseNotDefined()
-
 def nullHeuristic(state, problem=None):
   """
   A heuristic function estimates the cost from the current state to the nearest
