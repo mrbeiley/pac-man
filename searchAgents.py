@@ -296,7 +296,7 @@ class CornersProblem(search.SearchProblem):
             num_corners = num_corners + 1
 
     if num_corners == 4: isGoal = True
-    else: isGoal == False
+    else: isGoal = False
     return isGoal
 
   def getSuccessors(self, state):
