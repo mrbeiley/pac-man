@@ -104,6 +104,7 @@ class SearchAgent(Agent):
     if self.searchFunction == None: raise Exception, "No search function provided for SearchAgent"
     starttime = time.time()
     problem = self.searchType(state) # Makes a new search problem
+    self.actions  = self.searchFunction(problem) # Find a path
     totalCost = problem.getCostOfActions(self.actions)
     print('Path found with total cost of %d in %.1f seconds' % (totalCost, time.time() - starttime))
     if '_expanded' in dir(problem): print('Search nodes expanded: %d' % problem._expanded)
@@ -270,32 +271,31 @@ class CornersProblem(search.SearchProblem):
     self.startingPosition = startingGameState.getPacmanPosition()
     top, right = self.walls.height-2, self.walls.width-2
     self.corners = ((1,1), (1,top), (right, 1), (right, top))
+    self.heuristicInfo = {}
+    self.corner_bool = (False, False, False, False)
+    self.startState = (self.startingPosition, self.corner_bool)
+    #else:
+
     for corner in self.corners:
       if not startingGameState.hasFood(*corner):
         print 'Warning: no food in corner ' + str(corner)
     self._expanded = 0 # Number of search nodes expanded
 
-    self._visited, self._visitedlist, self._expanded = {}, [], 0
-
-    "*** YOUR CODE HERE ***"
+    self._visited, self.visitedlist = {}, []
 
   def getStartState(self):
     "Returns the start state (in your state space, not the full Pacman state space)"
-    "*** YOUR CODE HERE ***"
-    return self.startingPosition
+    return self.startState
 
   def isGoalState(self, state):
     """
     Returns whether this search state is a goal state of the problem
     """
-    for corner in self.corners:
-        num_corners = 0
-        if corner in self._visitedlist:
-            num_corners = num_corners + 1
-
-    if num_corners == 4: isGoal = True
-    else: isGoal = False
-    return isGoal
+    """f state[0] not in self.visitedlist:
+        self._visited[state[0]] = True
+        self.visitedlist.append(state[0])
+    """
+    return state[1].count(True) == 4
 
   def getSuccessors(self, state):
     """
@@ -310,24 +310,28 @@ class CornersProblem(search.SearchProblem):
     """
 
     successors = []
+    self._expanded += 1
     for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
       # Add a successor state to the successor list if the action is legal
       # Here's a code snippet for figuring out whether a new position hits a wall:
-      x,y = state
+
+      x,y = state[0]
       dx, dy = Actions.directionToVector(action)
       nextx, nexty = int(x + dx), int(y + dy)
       hitsWall = self.walls[nextx][nexty]
       if not hitsWall:
-          nextState = (nextx, nexty)
+          if state[0] in self.corners:
+              idx = self.corners.index(state[0])
+              new_bool = list(state[1])
+              new_bool[idx] = True
+              new_bool = tuple(new_bool)
+          else: new_bool = state[1]
+
+          print new_bool
+
+          nextState = ((nextx, nexty), new_bool)
           successors.append((nextState, action, 1))
 
-
-    self._expanded += 1
-    # Bookkeeping for display purposes
-    self._expanded += 1
-    if state not in self._visited:
-        self._visited[state] = True
-        self._visitedlist.append(state)
     return successors
 
   def getCostOfActions(self, actions):
@@ -343,6 +347,20 @@ class CornersProblem(search.SearchProblem):
       if self.walls[x][y]: return 999999
     return len(actions)
 
+def manhattanDistance(pos1, pos2):
+    """
+    returns a general manhattan distance between any 2 points
+
+    pos1: position coordinated in n-space (tuple)
+    pos2: position coordinated in n-space (tuple)
+    """
+    man_dist = 0
+    if len(pos1) != len(pos2):
+        raise Exception('Coordiantes must be of the same dimension')
+    for n in len(pos1):
+         man_dist = man_dist + abs(pos1[n] - pos2[n])
+
+    return man_dist
 
 def cornersHeuristic(state, problem):
   """
@@ -361,7 +379,18 @@ def cornersHeuristic(state, problem):
   corners = problem.corners # These are the corner coordinates
   walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
-  "*** YOUR CODE HERE ***"
+  corner_dist = []
+  for i in len(corners):
+      corner_dist.append(manhattanDistance(state[0], corner[i]))
+
+
+
+
+
+
+
+
+
   return 0 # Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):

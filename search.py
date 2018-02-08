@@ -147,31 +147,32 @@ def nullHeuristic(state, problem=None):
   return 0
 
 def aStarSearch(problem, heuristic=nullHeuristic):
- """Search the node that has the lowest combined cost and heuristic first.
+    """Search the node that has the lowest combined cost and heuristic first.
 
- """
- heur_start = heuristic(problem.getStartState(), problem)
- strategy = util.PriorityQueue()
- start_node = Node(problem.getStartState(), None , heur_start, None)
- strategy.push(start_node, start_node.cost)
- explored = set()
+    """
+    heur_start = heuristic(problem.getStartState(), problem)
+    strategy = util.PriorityQueue()
+    start_node = Node(problem.getStartState(), None , 0, None)
+    strategy.push(start_node, heuristic(start_node.state, problem) +start_node.cost)
+    explored = set()
 
- while strategy.isEmpty() == False:
-     node = strategy.pop()
-     if problem.isGoalState(node.state) == True:
-         return node.getSolution()
-     else:
-         explored.add(node.state)
-         for succ in problem.getSuccessors(node.state):
-             succ_node = Node(succ[0],succ[1],node.cost+ succ[2] + heuristic(succ[0], problem), node)
-             if succ_node.state not in explored and succ_node not in strategy.heap:
-                 strategy.push(succ_node, succ_node.cost)
-             elif succ_node in strategy.heap:
-                 compare_node = strategy.find_and_extract(succ_node.state)
-                 if succ_node.cost < compare_node.cost:
-                     strategy.push(succ_node, succ_node.cost)
-                 else:
-                     strategy.push(compare_node, compare_node.cost)
+    while strategy.isEmpty() == False:
+        node = strategy.pop()
+        if problem.isGoalState(node.state) == True:
+          return node.getSolution()
+        else:
+          explored.add(node.state)
+          for succ in problem.getSuccessors(node.state):
+              succ_node = Node(succ[0],succ[1],node.cost+ succ[2], node)
+              if succ_node.state not in explored and succ_node not in strategy.heap:
+                  strategy.push(succ_node, succ_node.cost + heuristic(succ_node.state, problem))
+              elif succ_node in strategy.heap:
+                  compare_node = strategy.find_and_extract(succ_node.state)
+                  if succ_node.cost < compare_node.cost:
+                      strategy.push(succ_node, succ_node.cost + heuristic(succ_node.state, problem))
+                  else:
+                      strategy.push(compare_node, compare_node.cost + heuristic(compare_node.state, problem))
+
 
 
 
