@@ -83,6 +83,7 @@ def graphSearch(problem, strategy):
 
     while strategy.isEmpty() == False:
         node = strategy.pop()
+        if node.state in explored: continue
         if problem.isGoalState(node.state) == True:
             return node.getSolution()
         else:
@@ -123,6 +124,7 @@ def uniformCostSearch(problem):
 
   while strategy.isEmpty() == False:
       node = strategy.pop()
+      if node.state in explored: continue
       if problem.isGoalState(node.state) == True:
           return node.getSolution()
       else:
@@ -158,6 +160,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
 
     while strategy.isEmpty() == False:
         node = strategy.pop()
+        if node.state in explored: continue
         if problem.isGoalState(node.state) == True:
           return node.getSolution()
         else:

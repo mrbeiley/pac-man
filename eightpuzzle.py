@@ -127,7 +127,7 @@ class EightPuzzleState:
      newrow = row
      newcol = col + 1
    else:
-     raise "Illegal Move"
+     raise Exception("Illegal Move")
 
    # Create a copy of the current eightPuzzle
    newPuzzle = EightPuzzleState([0, 0, 0, 0, 0, 0, 0, 0, 0])
@@ -191,10 +191,10 @@ class EightPuzzleSearchProblem(search.SearchProblem):
 
   def getStartState(self):
     return puzzle
-      
+
   def isGoalState(self,state):
     return state.isGoal()
-   
+
   def getSuccessors(self,state):
     """
       Returns list of (successor, action, stepCost) pairs where
@@ -209,28 +209,28 @@ class EightPuzzleSearchProblem(search.SearchProblem):
   def getCostOfActions(self, actions):
      """
       actions: A list of actions to take
- 
+
      This method returns the total cost of a particular sequence of actions.  The sequence must
      be composed of legal moves
      """
      return len(actions)
 
-EIGHT_PUZZLE_DATA = [[1, 0, 2, 3, 4, 5, 6, 7, 8], 
-                     [1, 7, 8, 2, 3, 4, 5, 6, 0], 
-                     [4, 3, 2, 7, 0, 5, 1, 6, 8], 
-                     [5, 1, 3, 4, 0, 2, 6, 7, 8], 
-                     [1, 2, 5, 7, 6, 8, 0, 4, 3], 
+EIGHT_PUZZLE_DATA = [[1, 0, 2, 3, 4, 5, 6, 7, 8],
+                     [1, 7, 8, 2, 3, 4, 5, 6, 0],
+                     [4, 3, 2, 7, 0, 5, 1, 6, 8],
+                     [5, 1, 3, 4, 0, 2, 6, 7, 8],
+                     [1, 2, 5, 7, 6, 8, 0, 4, 3],
                      [0, 3, 1, 6, 8, 2, 7, 5, 4]]
 
 def loadEightPuzzle(puzzleNumber):
   """
     puzzleNumber: The number of the eight puzzle to load.
-    
+
     Returns an eight puzzle object generated from one of the
     provided puzzles in EIGHT_PUZZLE_DATA.
-    
+
     puzzleNumber can range from 0 to 5.
-    
+
     >>> print loadEightPuzzle(0)
     -------------
     | 1 |   | 2 |
@@ -260,7 +260,7 @@ if __name__ == '__main__':
   puzzle = createRandomEightPuzzle(25)
   print('A random puzzle:')
   print(puzzle)
-  
+
   problem = EightPuzzleSearchProblem(puzzle)
   path = search.breadthFirstSearch(problem)
   print('BFS found a path of %d moves: %s' % (len(path), str(path)))
@@ -270,6 +270,6 @@ if __name__ == '__main__':
     curr = curr.result(a)
     print('After %d move%s: %s' % (i, ("", "s")[i>1], a))
     print(curr)
-    
+
     raw_input("Press return for the next state...")   # wait for key stroke
     i += 1
