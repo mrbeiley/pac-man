@@ -424,7 +424,7 @@ def cornersHeuristic(state, problem):
    		cur_dist = manhattanDistance(state[0], problem.corners[n])
   		if cur_dist > man_dist:
 			man_dist = cur_dist
-  return man_dist 
+  return man_dist
 #  return man_dist # Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
@@ -517,10 +517,14 @@ def foodHeuristic(state, problem):
   position, foodGrid = state
   food_list = foodGrid.asList()
 
+  walls = problem.walls
+  print walls
   food_dist = []
   for food in food_list:
       food_dist.append(manhattanDistance(position, food))
 
+  min_food = min(food_dist)
+  min_idx = min_food
   if len(food_list) != 0:
       #print len(food_list) + max(food_dist)
       return len(food_list) + min(food_dist)
