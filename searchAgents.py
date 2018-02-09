@@ -418,15 +418,13 @@ def cornersHeuristic(state, problem):
 
 
 
-  output = 0
-  for n in range(0, len(problem.corners)):
+  man_dist = 0
+  for n in range(len(problem.corners)):
   	if state[1][n] == False:
-   		curDist = manhattanDistance(state[0], problem.corners[n])
-  		if curDist > output:
-			output = curDist
-  if(output > 100):
-	print output
-  return output 
+   		cur_dist = manhattanDistance(state[0], problem.corners[n])
+  		if cur_dist > man_dist:
+			man_dist = cur_dist
+  return man_dist 
 #  return man_dist # Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
@@ -522,7 +520,10 @@ def foodHeuristic(state, problem):
   food_dist = []
   for food in food_list:
       food_dist.append(manhattanDistance(position, food))
-  if len(food_dist) != 0: return len(food_list) + min(food_dist)
+
+  if len(food_dist) != 0:
+      print len(food_list) + max(food_dist)
+      return len(food_list) + max(food_dist)
   else: return len(food_list)
 
 class ClosestDotSearchAgent(SearchAgent):
@@ -550,8 +551,7 @@ class ClosestDotSearchAgent(SearchAgent):
     walls = gameState.getWalls()
     problem = AnyFoodSearchProblem(gameState)
 
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    return search.uniformCostSearch(problem)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
   """
@@ -579,15 +579,13 @@ class AnyFoodSearchProblem(PositionSearchProblem):
     self.costFn = lambda x: 1
     self._visited, self._visitedlist, self._expanded = {}, [], 0
 
+
   def isGoalState(self, state):
     """
-    The state is Pacman's position. Fill this in with a goal test
-    that will complete the problem definition.
+    self.food is a Grid object, so to find the closest food test if your state is a food object
     """
     x,y = state
-
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    return self.food[x][y]
 
 ##################
 # Mini-contest 1 #
