@@ -327,7 +327,6 @@ class CornersProblem(search.SearchProblem):
               new_bool = tuple(new_bool)
           else: new_bool = state[1]
 
-          print new_bool
 
           nextState = ((nextx, nexty), new_bool)
           successors.append((nextState, action, 1))
@@ -358,7 +357,7 @@ def manhattanDistance(pos1, pos2):
     man_dist = 0
     if len(pos1) != len(pos2):
         raise Exception('Coordiantes must be of the same dimension')
-    for n in len(pos1):
+    for n in xrange(len(pos1)):
          man_dist = man_dist + abs(pos1[n] - pos2[n])
 
     return man_dist
@@ -381,18 +380,29 @@ def cornersHeuristic(state, problem):
   walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
   corner_dist = []
-  for i in len(corners):
-      corner_dist.append(manhattanDistance(state[0], corner[i]))
+
+  new_corners = list(corners)
+  for c in state[1]:
+      if c == True:
+          del new_corners[state[1].index(c)]
+
+  if len(new_corners) == 0: return 0
+  for i in xrange(len(new_corners)):
+      corner_dist.append(manhattanDistance(state[0], new_corners[i]))
 
 
+  close_corner = min(corner_dist)
+  start_idx = corner_dist.index(close_corner)
 
-
-
-
-
-
-
-  return 0 # Default to trivial solution
+  man_dist = manhattanDistance(state[0],new_corners[start_idx])
+  for i in xrange(len(new_corners)):
+      if i == len(new_corners)-1:
+          man_dist += manhattanDistance(new_corners[i], new_corners[0])
+      else:
+          man_dist+= manhattanDistance(new_corners[i], new_corners[i+1])
+  print man_dist
+  if man_dist > 162: return None
+  return man_dist # Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
   "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
