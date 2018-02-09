@@ -26,7 +26,7 @@ Look for the lines that say
 The parts you fill in start about 3/4 of the way down.  Follow the
 project description for details.
 
-Good luck and happy searching!	
+Good luck and happy searching!
 """
 from game import Directions
 from game import Agent
@@ -504,8 +504,13 @@ def foodHeuristic(state, problem):
   Subsequent calls to this heuristic can access problem.heuristicInfo['wallCount']
   """
   position, foodGrid = state
-  "*** YOUR CODE HERE ***"
-  return 0
+  food_list = foodGrid.asList()
+
+  food_dist = []
+  for food in food_list:
+      food_dist.append(manhattanDistance(position, food))
+  if len(food_dist) != 0: return len(food_list) + min(food_dist)
+  else: return len(food_list)
 
 class ClosestDotSearchAgent(SearchAgent):
   "Search for all food using a sequence of searches"
