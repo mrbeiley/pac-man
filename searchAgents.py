@@ -354,13 +354,24 @@ def manhattanDistance(pos1, pos2):
     pos1: position coordinated in n-space (tuple)
     pos2: position coordinated in n-space (tuple)
     """
-    man_dist = 0
+    if len(pos1) != len(pos2):
+        raise Exception('Coordiantes must be of the same dimension')
+
+    return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
+
+def euclidianDistance(pos1, pos2):
+    """
+    returns a general manhattan distance between any 2 points
+
+    pos1: position coordinated in n-space (tuple)
+    pos2: position coordinated in n-space (tuple)
+    """
+    euc_dist = 0
     if len(pos1) != len(pos2):
         raise Exception('Coordiantes must be of the same dimension')
     for n in xrange(len(pos1)):
-         man_dist = man_dist + abs(pos1[n] - pos2[n])
-
-    return man_dist
+        euc_dist += (pos1[n] - pos2[n]) ** 2
+    return euc_dist**.5
 
 def cornersHeuristic(state, problem):
   """
@@ -395,13 +406,14 @@ def cornersHeuristic(state, problem):
   start_idx = corner_dist.index(close_corner)
 
   man_dist = manhattanDistance(state[0],new_corners[start_idx])
-  for i in xrange(len(new_corners)):
+  for i in xrange(start_idx, len(new_corners)):
+
       if i == len(new_corners)-1:
           man_dist += manhattanDistance(new_corners[i], new_corners[0])
       else:
           man_dist+= manhattanDistance(new_corners[i], new_corners[i+1])
   print man_dist
-  if man_dist > 162: return None
+
   return man_dist # Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
