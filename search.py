@@ -8,7 +8,7 @@
 
 """
 In search.py, you will implement generic search algorithms which are called
-by Pacman agents (in searchAgents.py).	
+by Pacman agents (in searchAgents.py).
 """
 
 import util
@@ -162,13 +162,14 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         node = strategy.pop()
         if node.state in explored: continue
         if problem.isGoalState(node.state) == True:
-          return node.getSolution()
+          return node.getSolution(heuristic, problem)
         else:
           explored.add(node.state)
           for succ in problem.getSuccessors(node.state):
               succ_node = Node(succ[0],succ[1],node.cost+ succ[2], node)
               if succ_node.state not in explored and succ_node not in strategy.heap:
                   strategy.push(succ_node, succ_node.cost + heuristic(succ_node.state, problem))
+
               elif succ_node in strategy.heap:
                   compare_node = strategy.find_and_extract(succ_node.state)
                   if succ_node.cost < compare_node.cost:
@@ -204,12 +205,13 @@ class Node():
         self.parent = parent
 
 
-    def getSolution(self):
+    def getSolution(self, heuristic, problem):
         path = [self.action]
         parent = self.parent
         while parent.action != None:
             path.append(parent.action)
             parent = parent.parent
+            print parent.cost + heuristic(parent.state, problem)
         #for i in xrange(len(self.path)):
         #        if(self.path[i] == 'North'):
         #            self.path[i] = n

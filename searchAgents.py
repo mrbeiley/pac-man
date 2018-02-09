@@ -510,9 +510,9 @@ def foodHeuristic(state, problem):
   for food in food_list:
       food_dist.append(manhattanDistance(position, food))
 
-  if len(food_dist) != 0:
-      print len(food_list) + max(food_dist)
-      return len(food_list) + max(food_dist)
+  if len(food_list) != 0:
+      #print len(food_list) + max(food_dist)
+      return len(food_list) + min(food_dist)
   else: return len(food_list)
 
 class ClosestDotSearchAgent(SearchAgent):
