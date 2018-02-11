@@ -425,7 +425,7 @@ def cornersHeuristic(state, problem):
   		if cur_dist > man_dist:
 			man_dist = cur_dist
   return man_dist
-#  return man_dist # Default to trivial solution
+
 
 class AStarCornersAgent(SearchAgent):
   "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -517,18 +517,23 @@ def foodHeuristic(state, problem):
   position, foodGrid = state
   food_list = foodGrid.asList()
 
-  walls = problem.walls
-  print walls
+
   food_dist = []
   for food in food_list:
       food_dist.append(manhattanDistance(position, food))
 
-  min_food = min(food_dist)
-  min_idx = min_food
   if len(food_list) != 0:
-      #print len(food_list) + max(food_dist)
-      return len(food_list) + min(food_dist)
-  else: return len(food_list)
+        min_food = min(food_dist)
+        min_idx = food_dist.index(min_food)
+
+        max_food = max(food_dist)
+        max_idx = food_dist.index(max_food)
+
+        min_max = manhattanDistance(food_list[min_idx], food_list[max_idx])
+        #print min_max + min(food_dist)
+        return max(min_max + min(food_dist), len(food_list) , max(food_dist))
+
+  else: return 0
 
 class ClosestDotSearchAgent(SearchAgent):
   "Search for all food using a sequence of searches"
@@ -624,7 +629,7 @@ def mazeDistance(point1, point2, gameState):
   x1, y1 = point1
   x2, y2 = point2
   walls = gameState.getWalls()
-  assert not walls[x1][y1], 'point1 is a wall: ' + point1
+  assert not walls[x1][y1], 'point1 is a wall: ' + str(point1)
   assert not walls[x2][y2], 'point2 is a wall: ' + str(point2)
   prob = PositionSearchProblem(gameState, start=point1, goal=point2, warn=False)
   return len(search.bfs(prob))

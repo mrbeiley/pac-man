@@ -11,12 +11,7 @@ In search.py, you will implement generic search algorithms which are called
 by Pacman agents (in searchAgents.py).
 """
 
-import util
-from game import Directions
-s = Directions.SOUTH
-w = Directions.WEST
-n = Directions.NORTH
-e = Directions.EAST
+import util #contains data structures
 
 class SearchProblem:
   """
@@ -74,8 +69,8 @@ def tinyMazeSearch(problem):
 
 def graphSearch(problem, strategy):
     """
-        problem: initializes board state
-        strategy: type of ordering structure for search
+    problem: initializes board state
+    strategy: type of ordering structure for search
     """
     start_node = Node(problem.getStartState(), None , 0, None)
     strategy.push(start_node)
@@ -186,7 +181,22 @@ dfs = depthFirstSearch
 astar = aStarSearch
 ucs = uniformCostSearch
 
+#shorthand directons
+from game import Directions
+s = Directions.SOUTH
+w = Directions.WEST
+n = Directions.NORTH
+e = Directions.EAST
+
 class Node():
+    """
+    Node class is a full representation of a node in a search graph, with attributes:
+
+    *state encodes all the necessary components for the problem to understand the world (subset of Pacman gameState)
+    *action is the move necessary to reach the node from its parent
+    *cost is the full cost of the path from start to the node
+    *parent node necessary to traverse back up the tree to get a solution path
+    """
 
     def __init__(self, state, action, cost, parent):
 
@@ -206,6 +216,10 @@ class Node():
 
 
     def getSolution(self, heuristic, problem):
+        """
+
+
+        """
         path = [self.action]
         parent = self.parent
         while parent.action != None:
