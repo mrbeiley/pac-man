@@ -272,7 +272,12 @@ class CornersProblem(search.SearchProblem):
     top, right = self.walls.height-2, self.walls.width-2
     self.corners = ((1,1), (1,top), (right, 1), (right, top))
     self.heuristicInfo = {}
+
+    #boolean tuple keeps track of which corners have been visited
     self.corner_bool = (False, False, False, False)
+
+    #this problem only needs to know pacman's postion and if the corners have been visited
+    #so we treat a tuple of those elements as the state
     self.startState = (self.startingPosition, self.corner_bool)
     #else:
 
@@ -295,6 +300,8 @@ class CornersProblem(search.SearchProblem):
         self._visited[state[0]] = True
         self.visitedlist.append(state[0])
     """
+    #if pacman has been to all the corners, the goal is reached. This is when the corner_bool
+    #encoded in state[1] has all 4 elements reading true 
     return state[1].count(True) == 4
 
   def getSuccessors(self, state):
@@ -533,11 +540,13 @@ def foodHeuristic(state, problem):
   position, foodGrid = state
   food_list = foodGrid.asList()
 
-
+  #create and fill list of manhattan distances between pac man and all food items
   food_dist = []
   for food in food_list:
         food_dist.append(manhattanDistance(position, food))
 
+  #while there is food on the board return the maximum distance between
+  #pacman and a food item, otherwise return 0 since goal state
   if len(food_list) != 0:
 
         min_food = min(food_dist)
@@ -548,8 +557,8 @@ def foodHeuristic(state, problem):
 
         min_max = manhattanDistance(food_list[min_idx], food_list[max_idx])
         #print min_max + min(food_dist)
-        return  max(food_dist)
-
+        return max_food
+  #return 0 when goal state
   else: return 0
 
 class ClosestDotSearchAgent(SearchAgent):
@@ -611,6 +620,8 @@ class AnyFoodSearchProblem(PositionSearchProblem):
     self.food is a Grid object, so to find the closest food test if your state is a food object
     """
     x,y = state
+    #if the position pacman is in has a food item, the closest food has been found
+    #so this is a goal state
     return self.food[x][y]
 
 ##################
