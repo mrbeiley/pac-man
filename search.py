@@ -69,21 +69,31 @@ def tinyMazeSearch(problem):
 
 def graphSearch(problem, strategy):
     """
-    problem: initializes board state
-    strategy: type of ordering structure for search
-    """
-    start_node = Node(problem.getStartState(), None , 0, None)
-    strategy.push(start_node)
-    explored = set()
+    PARAMETERS:
+    	problem: initializes board state
+    	strategy: type of ordering structure for search
+    
+    graphSearch() takes a pacman problem and a strategy (data structure) to
+    find a path from the start state to the goal state. graphSearch() is an
+    uninformed search method. It expands out possible plans, maintains a frontier
+    of unexpanded search nodes, and tries to expand as few nodes as possible.
 
-    while strategy.isEmpty() == False:
-        node = strategy.pop()
-        if node.state in explored: continue
+    Returns a sequence of moves that solves the given problem.
+    """
+    start_node = Node(problem.getStartState(), None , 0, None) # creates a node from the starting state
+    strategy.push(start_node)
+    explored = set() # creates empty set for explored nodes
+
+    # searches until the frontier is empty
+    while strategy.isEmpty() == False: 
+        node = strategy.pop() # pops the next node from stack
+        if node.state in explored: continue 
         if problem.isGoalState(node.state) == True:
-            return node.getSolution(None, None)
+            return node.getSolution()
         else:
             explored.add(node.state)
 
+	    # expand chosen node, adding the resulting nodes to the frontier if they have not been explored 
             for succ in problem.getSuccessors(node.state):
                 succ_node = Node(succ[0],succ[1],succ[2], node)
                 if succ_node.state not in explored and succ_node not in strategy.list:
@@ -107,27 +117,40 @@ def breadthFirstSearch(problem):
   return graphSearch(problem, util.Queue())
 
 def uniformCostSearch(problem):
-  """Search the node of least total cost first.
+  """
+  Search the node of least total cost first.
 
   operates similar to graphSearch, but with
   extra cost checking functionality
+
+  uniformCostSearch() takes a pacman problem and tries to
+  find an optimal and complete path from the start state to the goal state. uniformCostSearch()
+  is an uninformed search method. It expands out possible plans, maintains a frontier
+  of unexpanded search nodes, and tries to expand as few nodes as possible.
+
+  Returns a sequence of moves that solves the given problem. 
   """
   strategy = util.PriorityQueue()
-  start_node = Node(problem.getStartState(), None , 0, None)
+  start_node = Node(problem.getStartState(), None , 0, None) # creates a node from the starting state
   strategy.push(start_node, start_node.cost)
-  explored = set()
+  explored = set() # creates empty set for explored nodes
 
+  # searches until the frontier is empty
   while strategy.isEmpty() == False:
-      node = strategy.pop()
+      node = strategy.pop() # pops the next node from the priority queue
       if node.state in explored: continue
       if problem.isGoalState(node.state) == True:
           return node.getSolution()
       else:
           explored.add(node.state)
+      
+   	  # expand the chosen node 
           for succ in problem.getSuccessors(node.state):
               succ_node = Node(succ[0],succ[1],node.cost+ succ[2], node)
+	      # add node to the frontier if they have not been explored or are not already in priority queue
               if succ_node.state not in explored and succ_node not in strategy.heap:
                   strategy.push(succ_node, succ_node.cost)
+	      # add the node with the lest total cost to the frontier
               elif succ_node in strategy.heap:
                   compare_node = strategy.find_and_extract(succ_node.state)
                   if succ_node.cost < compare_node.cost:
@@ -146,25 +169,38 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first.
 
+    Using an admissible heuristic to gaurantee that the first solution found
+    will be an optimal one. Expands nodes and adds them to the frontier as long
+    as they have not been previously explored. Uses lowest combined cost and
+    the specified heuristic function to find optimal path. 
+  
+    PARAMETERS: 
+	problem: gives the current pacman problem(state, map, food, walls)
+	heuristic: the specific heuristic used for this instance of search
+
+    Returns a path from the start state to the goal state.
     """
-    heur_start = heuristic(problem.getStartState(), problem)
+    heur_start = heuristic(problem.getStartState(), problem) # creates the heuristic object
     strategy = util.PriorityQueue()
     start_node = Node(problem.getStartState(), None , 0, None)
     strategy.push(start_node, heuristic(start_node.state, problem) +start_node.cost)
-    explored = set()
+    explored = set() # creates an empty set for the previously expanded nodes
 
+    # iterates until frontier is empty
     while strategy.isEmpty() == False:
         node = strategy.pop()
         if node.state in explored: continue
         if problem.isGoalState(node.state) == True:
-          return node.getSolution(heuristic, problem)
-        else:
+          return node.getSolution()
+        else: # if the node is not the goal state, try to add nodes to frontier
           explored.add(node.state)
           for succ in problem.getSuccessors(node.state):
               succ_node = Node(succ[0],succ[1],node.cost+ succ[2], node)
+	      # if succ_node is not in explored or in the frontier, add to frontier
               if succ_node.state not in explored and succ_node not in strategy.heap:
                   strategy.push(succ_node, succ_node.cost + heuristic(succ_node.state, problem))
 
+	      # if succ_node is in frontier, add node that had cheaper path and heuristic to frontier
               elif succ_node in strategy.heap:
                   compare_node = strategy.find_and_extract(succ_node.state)
                   if succ_node.cost < compare_node.cost:
@@ -215,9 +251,11 @@ class Node():
         self.parent = parent
 
 
-    def getSolution(self, heuristic, problem):
+    def getSolution(self):
         """
-
+	This function returns the path to the starting state of the problem.
+        It does so by adding the action each parent took to get to the current node
+	and adding it to the list. Finally the reversed list is returned.
 
         """
         path = [self.action]
@@ -225,14 +263,4 @@ class Node():
         while parent.action != None:
             path.append(parent.action)
             parent = parent.parent
-            print parent.cost + heuristic(parent.state, problem)
-        #for i in xrange(len(self.path)):
-        #        if(self.path[i] == 'North'):
-        #            self.path[i] = n
-        #        elif(self.path[i] == 'South'):
-        #            self.path[i] = s
-        #        elif(self.path[i] == 'West'):
-        #            self.path[i] = w
-        #        else:
-        #            self.path[i] = e
         return path[::-1]
