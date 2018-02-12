@@ -387,7 +387,7 @@ def cornersHeuristic(state, problem):
   it should be admissible.  (You need not worry about consistency for
   this heuristic to receive full credit.)
   """
-  """
+
   corners = problem.corners # These are the corner coordinates
   walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
@@ -402,30 +402,46 @@ def cornersHeuristic(state, problem):
   for i in xrange(len(new_corners)):
       corner_dist.append(manhattanDistance(state[0], new_corners[i]))
 
-
   close_corner = min(corner_dist)
   start_idx = corner_dist.index(close_corner)
 
   man_dist = manhattanDistance(state[0],new_corners[start_idx])
-  for i in xrange(start_idx, len(new_corners)):
+  used_corners = [False, False, False, False]
+  used_corners[start_idx] = True
 
+  for i in xrange(len(new_corners)):
+
+      if used_corners[i] == True: continue
       if i == len(new_corners)-1:
-          man_dist += manhattanDistance(new_corners[i], new_corners[0])
+          if used_corners[0]==True:
+              man_dist +=  manhattanDistance(new_corners[i], new_corners[i-1])
+          elif used_corners[i-1] == True:
+              man_dist += manhattanDistance(new_corners[i], new_corners[0])
+          else:
+              man_dist += min(manhattanDistance(new_corners[i], new_corners[0]), manhattanDistance(new_corners[i], new_corners[i-1]))
+          used_corners[i] = True
       else:
-          man_dist+= manhattanDistance(new_corners[i], new_corners[i+1])
-  print man_dist
+          if used_corners[i-1]==True:
+              man_dist +=  manhattanDistance(new_corners[i], new_corners[i+1])
+          elif used_corners[i+1] == True:
+              man_dist += manhattanDistance(new_corners[i], new_corners[i+1])
+          else:
+              man_dist += min(manhattanDistance(new_corners[i], new_corners[i+1]), manhattanDistance(new_corners[i], new_corners[i-1]))
+          used_corners[i] = True
+
+  return man_dist
+
+
+
   """
-
-
-
   man_dist = 0
-  for n in range(len(problem.corners)):
+  for n in range(len(corners)):
   	if state[1][n] == False:
-   		cur_dist = manhattanDistance(state[0], problem.corners[n])
+   		cur_dist = manhattanDistance(state[0], corners[n])
   		if cur_dist > man_dist:
 			man_dist = cur_dist
   return man_dist
-
+  """
 
 class AStarCornersAgent(SearchAgent):
   "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
