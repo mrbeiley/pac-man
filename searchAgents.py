@@ -536,9 +536,10 @@ def foodHeuristic(state, problem):
 
   food_dist = []
   for food in food_list:
-      food_dist.append(manhattanDistance(position, food))
+        food_dist.append(manhattanDistance(position, food))
 
   if len(food_list) != 0:
+
         min_food = min(food_dist)
         min_idx = food_dist.index(min_food)
 
@@ -547,7 +548,7 @@ def foodHeuristic(state, problem):
 
         min_max = manhattanDistance(food_list[min_idx], food_list[max_idx])
         #print min_max + min(food_dist)
-        return max(min_max + min(food_dist), len(food_list) , max(food_dist))
+        return  max(food_dist)
 
   else: return 0
 

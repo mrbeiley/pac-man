@@ -80,7 +80,7 @@ def graphSearch(problem, strategy):
         node = strategy.pop()
         if node.state in explored: continue
         if problem.isGoalState(node.state) == True:
-            return node.getSolution()
+            return node.getSolution(None, None)
         else:
             explored.add(node.state)
 
